@@ -1,6 +1,5 @@
 package com.gildedrose;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -185,13 +184,15 @@ class GildedRoseTest {
         assertEquals(4, BACKSTAGE_PASSES.quality);
     }
 
-    @Disabled
     @Test
     void should_reduce_by_two_the_quality_of_Conjured() {
-        Item CONJURED = new Item("Conjured", 15, 20);
+        Item CONJURED = new Item("Conjured", 0, 0);
+
         app = gildedRose()
                 .withItem(CONJURED, 2, 30)
                 .build();
+
+        app.addQualityStrategyFor(CONJURED.name, () -> app.reduceQualityNotNegative(2));
 
         app.updateQuality();
         app.updateQuality();

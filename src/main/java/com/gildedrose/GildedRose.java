@@ -77,7 +77,7 @@ class GildedRose {
         return item.quality < 50 ? item.quality + increment : item.quality;
     }
 
-    private int reduceQualityNotNegative(int decrement) {
+    public int reduceQualityNotNegative(int decrement) {
         return item.quality > 0 ? item.quality - decrement : item.quality;
     }
 
@@ -85,7 +85,8 @@ class GildedRose {
         return item.sellIn <= maxSellIn;
     }
 
-    private interface QualityStrategy {
-        int updatedQuality();
+    public void addQualityStrategyFor(String name, QualityStrategy qualityStrategy) {
+        this.updatedQualityMap.put(name, qualityStrategy);
     }
+
 }
