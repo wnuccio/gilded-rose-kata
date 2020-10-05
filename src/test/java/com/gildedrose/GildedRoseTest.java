@@ -1,14 +1,15 @@
 package com.gildedrose;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GildedRoseTest {
-    private Item AGED_BRIE = new Item("Aged Brie", 15, 20);
-    private Item BACKSTAGE_PASSES = new Item("Backstage passes to a TAFKAL80ETC concert", 15, 20);
-    private Item ANY_ITEM = new Item("item", 15, 20);
-    private final Item SULFURAS = new Item("Sulfuras, Hand of Ragnaros", 15, 80);
+    private Item AGED_BRIE = new Item("Aged Brie", 0, 0);
+    private Item BACKSTAGE_PASSES = new Item("Backstage passes to a TAFKAL80ETC concert", 0, 0);
+    private Item ANY_ITEM = new Item("item", 0, 0);
+    private final Item SULFURAS = new Item("Sulfuras, Hand of Ragnaros", 0, 80);
 
     private GildedRose app;
 
@@ -158,7 +159,7 @@ class GildedRoseTest {
     @Test
     void should_never_modify_the_quality_of_Sulfuras() {
         app = gildedRose()
-                .withItem(SULFURAS)
+                .withItem(SULFURAS, 15, 80)
                 .build();
 
         assertEquals(80, SULFURAS.quality);
@@ -182,5 +183,21 @@ class GildedRoseTest {
         assertEquals(0, ANY_ITEM.quality);
         assertEquals(3, AGED_BRIE.quality);
         assertEquals(4, BACKSTAGE_PASSES.quality);
+    }
+
+    @Disabled
+    @Test
+    void should_reduce_by_two_the_quality_of_Conjured() {
+        Item CONJURED = new Item("Conjured", 15, 20);
+        app = gildedRose()
+                .withItem(CONJURED, 2, 30)
+                .build();
+
+        app.updateQuality();
+        app.updateQuality();
+
+        assertEquals(0, CONJURED.sellIn);
+        assertEquals(26, CONJURED.quality);
+
     }
 }
