@@ -20,27 +20,31 @@ class GildedRose {
             if (is(SULFURAS)) {
 
             } else if (is(AGED_BRIE)) {
-                increaseQualityNotOver50(sellDatePassed() ? 2 : 1);
+                updateQualityIn0_50range(sellDatePassed() ? +2 : +1);
 
             } else if (is(BACKSTAGE_PASS)) {
-                if (thereAreDays(11, Integer.MAX_VALUE)) {
-                    increaseQualityNotOver50(1);
-
-                } else if (thereAreDays(6, 10)) {
-                    increaseQualityNotOver50(2);
-
-                } else if (thereAreDays(1, 5)) {
-                    increaseQualityNotOver50(3);
-
-                } else {
-                    item.quality = 0;
-                }
+                updateBackstage();
 
             } else {
-                reduceQualityNotUnderZero(sellDatePassed() ? 2 : 1);
+                updateQualityIn0_50range(sellDatePassed() ? -2 : -1);
             }
 
             reduceSellInByOne();
+        }
+    }
+
+    private void updateBackstage() {
+        if (sellDatePassed()) {
+            item.quality = 0;
+
+        } else if (thereAreXDaysOrLess(5)) {
+            updateQualityIn0_50range(3);
+
+        } else if (thereAreXDaysOrLess(10)) {
+            updateQualityIn0_50range(2);
+
+        } else {
+            updateQualityIn0_50range(1);
         }
     }
 
@@ -48,17 +52,8 @@ class GildedRose {
         return item.sellIn <= 0;
     }
 
-    private boolean thereAreDays(int min, int max) {
-        return item.sellIn >= min && item.sellIn <= max;
-    }
-
     private void reduceSellInByOne() {
         item.sellIn = item.sellIn - 1;
-    }
-
-    private void increaseQualityNotOver50(int increment) {
-        if (item.quality < 50)
-            item.quality = item.quality + increment;
     }
 
     private boolean is(String... names) {
@@ -66,9 +61,9 @@ class GildedRose {
                 .anyMatch(name -> this.item.name.equals(name));
     }
 
-    private void reduceQualityNotUnderZero(int decrement) {
-        if (item.quality > 0)
-            item.quality = item.quality - decrement;
+    private void updateQualityIn0_50range(int increment) {
+        if (increment >0 && item.quality < 50 || increment < 0 && item.quality > 0)
+            item.quality = item.quality + increment;
     }
 
     private boolean thereAreXDaysOrLess(int maxSellIn) {
