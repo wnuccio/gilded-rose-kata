@@ -1,5 +1,7 @@
 package com.gildedrose;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 class GildedRose {
@@ -8,40 +10,39 @@ class GildedRose {
     private String BACKSTAGE_PASS = "Backstage passes to a TAFKAL80ETC concert";
     private String AGED_BRIE = "Aged Brie";
     private Item item;
+    private Map<String, QualityStrategy> updatedQualityMap;
 
     public GildedRose(Item[] items) {
         this.items = items;
+        updatedQualityMap = new HashMap<>();
+        initializeQualityMap();
+    }
+
+    private void initializeQualityMap() {
+        updatedQualityMap.put(SULFURAS, this::sulfurasQuality);
+        updatedQualityMap.put(AGED_BRIE, this::agedBrieQuality);
+        updatedQualityMap.put(BACKSTAGE_PASS, this::backstageQuality);
+    }
+
+    private int agedBrieQuality() {
+        return increaseQualityNotOver50(sellDatePassed() ? +2 : +1);
+    }
+
+    private int sulfurasQuality() {
+        return item.quality;
     }
 
     public void updateQuality() {
         for (Item value : items) {
             this.item = value;
-
-            item.quality = updatedQuality();
+            item.quality = qualityStrategy().updatedQuality();
             reduceSellInByOne();
         }
     }
 
-    private int updatedQuality() {
-        int newQuality;
-
-        if (is(SULFURAS)) {
-            newQuality = sulfurasQuality();
-
-        } else if (is(AGED_BRIE)) {
-            newQuality = increaseQualityNotOver50(sellDatePassed() ? +2 : +1);
-
-        } else if (is(BACKSTAGE_PASS)) {
-            newQuality = backstageQuality();
-
-        } else {
-            newQuality = reduceQualityNotNegative(sellDatePassed() ? 2 : 1);
-        }
-        return newQuality;
-    }
-
-    private int sulfurasQuality() {
-        return item.quality;
+    private QualityStrategy qualityStrategy() {
+        return updatedQualityMap.getOrDefault(
+                item.name, () -> reduceQualityNotNegative(sellDatePassed() ? 2 : 1));
     }
 
     private int backstageQuality() {
@@ -82,5 +83,9 @@ class GildedRose {
 
     private boolean thereAreXDaysOrLess(int maxSellIn) {
         return item.sellIn <= maxSellIn;
+    }
+
+    private interface QualityStrategy {
+        int updatedQuality();
     }
 }
