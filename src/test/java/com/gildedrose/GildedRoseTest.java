@@ -192,8 +192,6 @@ class GildedRoseTest {
                 .withItem(CONJURED, 2, 30)
                 .build();
 
-        app.addQualityStrategyFor(CONJURED.name, () -> app.reduceQualityNotNegative(2));
-
         app.updateQuality();
         app.updateQuality();
 

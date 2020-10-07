@@ -2,13 +2,13 @@ package com.gildedrose;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 
 class GildedRose {
     Item[] items;
     private String SULFURAS = "Sulfuras, Hand of Ragnaros";
     private String BACKSTAGE_PASS = "Backstage passes to a TAFKAL80ETC concert";
     private String AGED_BRIE = "Aged Brie";
+    private String CONJURED = "Conjured";
     private Item item;
     private Map<String, QualityStrategy> updatedQualityMap;
 
@@ -22,6 +22,7 @@ class GildedRose {
         updatedQualityMap.put(SULFURAS, this::sulfurasQuality);
         updatedQualityMap.put(AGED_BRIE, this::agedBrieQuality);
         updatedQualityMap.put(BACKSTAGE_PASS, this::backstageQuality);
+        updatedQualityMap.put(CONJURED, this::conjuredQuality);
     }
 
     private int updatedQuality() {
@@ -65,17 +66,16 @@ class GildedRose {
         return item.quality;
     }
 
+    private int conjuredQuality() {
+        return reduceQualityNotNegative(2);
+    }
+
     private boolean sellDatePassed() {
         return item.sellIn <= 0;
     }
 
     private void reduceSellInByOne() {
         item.sellIn = item.sellIn - 1;
-    }
-
-    private boolean is(String... names) {
-        return Stream.of(names)
-                .anyMatch(name -> this.item.name.equals(name));
     }
 
     private int increaseQualityNotOver50(int increment) {
@@ -88,10 +88,6 @@ class GildedRose {
 
     private boolean thereAreXDaysOrLess(int maxSellIn) {
         return item.sellIn <= maxSellIn;
-    }
-
-    public void addQualityStrategyFor(String name, QualityStrategy qualityStrategy) {
-        this.updatedQualityMap.put(name, qualityStrategy);
     }
 
 }
