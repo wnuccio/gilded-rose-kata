@@ -24,25 +24,26 @@ class GildedRose {
         updatedQualityMap.put(BACKSTAGE_PASS, this::backstageQuality);
     }
 
-    private int agedBrieQuality() {
-        return increaseQualityNotOver50(sellDatePassed() ? +2 : +1);
-    }
-
-    private int sulfurasQuality() {
-        return item.quality;
+    private int updatedQuality() {
+        QualityStrategy qualityStrategy =
+                updatedQualityMap.getOrDefault(item.name, this::defaultQuality);
+        return qualityStrategy.updatedQuality();
     }
 
     public void updateQuality() {
-        for (Item value : items) {
-            this.item = value;
-            item.quality = qualityStrategy().updatedQuality();
+        for (Item currentItem : items) {
+            item = currentItem;
+            item.quality = updatedQuality();
             reduceSellInByOne();
         }
     }
 
-    private QualityStrategy qualityStrategy() {
-        return updatedQualityMap.getOrDefault(
-                item.name, () -> reduceQualityNotNegative(sellDatePassed() ? 2 : 1));
+    private int defaultQuality() {
+        return reduceQualityNotNegative(sellDatePassed() ? 2 : 1);
+    }
+
+    private int agedBrieQuality() {
+        return increaseQualityNotOver50(sellDatePassed() ? +2 : +1);
     }
 
     private int backstageQuality() {
@@ -58,6 +59,10 @@ class GildedRose {
         } else {
             return increaseQualityNotOver50(1);
         }
+    }
+
+    private int sulfurasQuality() {
+        return item.quality;
     }
 
     private boolean sellDatePassed() {
